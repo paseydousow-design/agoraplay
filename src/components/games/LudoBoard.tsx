@@ -399,48 +399,36 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
 
   state.playerColors.forEach((color) => {
     (tokens[color] || []).forEach((token) => {
+      if (token.position === -1) return; // Placé directement dans son socle de maison (Yard Socket)
+
       const isPlayable =
         activeColor === color &&
         playableTokens.some((pt) => pt.id === token.id);
 
-      if (token.position === -1) {
-        // Token sits in its fixed yard socket
-        const [yardRow, yardCol] =
-          YARD_SOCKET_COORDS[color][token.id] || [0, 0];
-        allTokensToRender.push({
-          color,
-          tokenId: token.id,
-          row: yardRow,
-          col: yardCol,
-          isPlayable,
-          isInYard: true,
-        });
-      } else {
-        const sq = getLudoBoardSquare(color, token.position);
-        let row = 7;
-        let col = 7;
+      const sq = getLudoBoardSquare(color, token.position);
+      let row = 7;
+      let col = 7;
 
-        if (sq.type === 'track') {
-          const coords = TRACK_COORDS[sq.index];
-          if (coords) [row, col] = coords;
-        } else if (sq.type === 'runway') {
-          const runwayCoords = RUNWAY_COORDS[color];
-          if (runwayCoords && runwayCoords[sq.index]) {
-            [row, col] = runwayCoords[sq.index];
-          }
-        } else if (sq.type === 'goal') {
-          [row, col] = GOAL_CENTER_COORDS[color];
+      if (sq.type === 'track') {
+        const coords = TRACK_COORDS[sq.index];
+        if (coords) [row, col] = coords;
+      } else if (sq.type === 'runway') {
+        const runwayCoords = RUNWAY_COORDS[color];
+        if (runwayCoords && runwayCoords[sq.index]) {
+          [row, col] = runwayCoords[sq.index];
         }
-
-        allTokensToRender.push({
-          color,
-          tokenId: token.id,
-          row,
-          col,
-          isPlayable,
-          isInYard: false,
-        });
+      } else if (sq.type === 'goal') {
+        [row, col] = GOAL_CENTER_COORDS[color];
       }
+
+      allTokensToRender.push({
+        color,
+        tokenId: token.id,
+        row,
+        col,
+        isPlayable,
+        isInYard: false,
+      });
     });
   });
 
@@ -616,14 +604,34 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
               className="bg-[#ea2e3a] p-2 sm:p-3 flex items-center justify-center border-b-2 border-r-2 border-slate-900"
             >
               <div className="w-full h-full bg-white rounded-xl p-2 sm:p-3 grid grid-cols-2 grid-rows-2 gap-2 shadow-inner border border-slate-200">
-                {[0, 1, 2, 3].map((socketId) => (
-                  <div
-                    key={`red-socket-${socketId}`}
-                    className="flex items-center justify-center bg-red-100/70 rounded-full border-2 border-[#ea2e3a]/40 shadow-inner"
-                  >
-                    <div className="w-4 h-4 rounded-full bg-[#ea2e3a]/25 border border-[#ea2e3a]/50" />
-                  </div>
-                ))}
+                {[0, 1, 2, 3].map((socketId) => {
+                  const token = (tokens.red || []).find((t) => t.id === socketId);
+                  const isInYard = token && token.position === -1;
+                  const isPlayable =
+                    isInYard &&
+                    activeColor === 'red' &&
+                    playableTokens.some((pt) => pt.id === socketId);
+
+                  return (
+                    <div
+                      key={`red-socket-${socketId}`}
+                      className="flex items-center justify-center bg-red-100/70 rounded-full border-2 border-[#ea2e3a]/40 shadow-inner relative p-1"
+                    >
+                      {isInYard ? (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <LudoKingPawn
+                            color="red"
+                            id={socketId}
+                            isPlayable={isPlayable}
+                            onClick={() => handleTokenClick(socketId, 'red')}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#ea2e3a]/25 border border-[#ea2e3a]/50" />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -669,14 +677,34 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
               className="bg-[#0fa958] p-2 sm:p-3 flex items-center justify-center border-b-2 border-l-2 border-slate-900"
             >
               <div className="w-full h-full bg-white rounded-xl p-2 sm:p-3 grid grid-cols-2 grid-rows-2 gap-2 shadow-inner border border-slate-200">
-                {[0, 1, 2, 3].map((socketId) => (
-                  <div
-                    key={`green-socket-${socketId}`}
-                    className="flex items-center justify-center bg-emerald-100/70 rounded-full border-2 border-[#0fa958]/40 shadow-inner"
-                  >
-                    <div className="w-4 h-4 rounded-full bg-[#0fa958]/25 border border-[#0fa958]/50" />
-                  </div>
-                ))}
+                {[0, 1, 2, 3].map((socketId) => {
+                  const token = (tokens.green || []).find((t) => t.id === socketId);
+                  const isInYard = token && token.position === -1;
+                  const isPlayable =
+                    isInYard &&
+                    activeColor === 'green' &&
+                    playableTokens.some((pt) => pt.id === socketId);
+
+                  return (
+                    <div
+                      key={`green-socket-${socketId}`}
+                      className="flex items-center justify-center bg-emerald-100/70 rounded-full border-2 border-[#0fa958]/40 shadow-inner relative p-1"
+                    >
+                      {isInYard ? (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <LudoKingPawn
+                            color="green"
+                            id={socketId}
+                            isPlayable={isPlayable}
+                            onClick={() => handleTokenClick(socketId, 'green')}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#0fa958]/25 border border-[#0fa958]/50" />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -782,14 +810,34 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
               className="bg-[#0088e8] p-2 sm:p-3 flex items-center justify-center border-t-2 border-r-2 border-slate-900"
             >
               <div className="w-full h-full bg-white rounded-xl p-2 sm:p-3 grid grid-cols-2 grid-rows-2 gap-2 shadow-inner border border-slate-200">
-                {[0, 1, 2, 3].map((socketId) => (
-                  <div
-                    key={`blue-socket-${socketId}`}
-                    className="flex items-center justify-center bg-sky-100/70 rounded-full border-2 border-[#0088e8]/40 shadow-inner"
-                  >
-                    <div className="w-4 h-4 rounded-full bg-[#0088e8]/25 border border-[#0088e8]/50" />
-                  </div>
-                ))}
+                {[0, 1, 2, 3].map((socketId) => {
+                  const token = (tokens.blue || []).find((t) => t.id === socketId);
+                  const isInYard = token && token.position === -1;
+                  const isPlayable =
+                    isInYard &&
+                    activeColor === 'blue' &&
+                    playableTokens.some((pt) => pt.id === socketId);
+
+                  return (
+                    <div
+                      key={`blue-socket-${socketId}`}
+                      className="flex items-center justify-center bg-sky-100/70 rounded-full border-2 border-[#0088e8]/40 shadow-inner relative p-1"
+                    >
+                      {isInYard ? (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <LudoKingPawn
+                            color="blue"
+                            id={socketId}
+                            isPlayable={isPlayable}
+                            onClick={() => handleTokenClick(socketId, 'blue')}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#0088e8]/25 border border-[#0088e8]/50" />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -835,14 +883,34 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
               className="bg-[#f5b800] p-2 sm:p-3 flex items-center justify-center border-t-2 border-l-2 border-slate-900"
             >
               <div className="w-full h-full bg-white rounded-xl p-2 sm:p-3 grid grid-cols-2 grid-rows-2 gap-2 shadow-inner border border-slate-200">
-                {[0, 1, 2, 3].map((socketId) => (
-                  <div
-                    key={`yellow-socket-${socketId}`}
-                    className="flex items-center justify-center bg-amber-100/70 rounded-full border-2 border-[#f5b800]/40 shadow-inner"
-                  >
-                    <div className="w-4 h-4 rounded-full bg-[#f5b800]/25 border border-[#f5b800]/50" />
-                  </div>
-                ))}
+                {[0, 1, 2, 3].map((socketId) => {
+                  const token = (tokens.yellow || []).find((t) => t.id === socketId);
+                  const isInYard = token && token.position === -1;
+                  const isPlayable =
+                    isInYard &&
+                    activeColor === 'yellow' &&
+                    playableTokens.some((pt) => pt.id === socketId);
+
+                  return (
+                    <div
+                      key={`yellow-socket-${socketId}`}
+                      className="flex items-center justify-center bg-amber-100/70 rounded-full border-2 border-[#f5b800]/40 shadow-inner relative p-1"
+                    >
+                      {isInYard ? (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <LudoKingPawn
+                            color="yellow"
+                            id={socketId}
+                            isPlayable={isPlayable}
+                            onClick={() => handleTokenClick(socketId, 'yellow')}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#f5b800]/25 border border-[#f5b800]/50" />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

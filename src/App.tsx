@@ -321,20 +321,22 @@ export default function App() {
           // 1. Roll dice if can roll
           if (gameState.canRollDice) {
             sounds.playDice();
-            const { nextState, mustChooseToken } = executeLudoDiceRoll(gameState);
+            const playerIds = [currentUser.id, botOpponentId];
+            const { nextState, mustChooseToken } = executeLudoDiceRoll(gameState, undefined, playerIds);
             if (mustChooseToken && nextState.diceValue) {
+              const botColor = nextState.playerColors[nextState.activeColorIndex];
               const bestTokenId = chooseLudoBotToken(
                 nextState.tokens,
-                'green',
+                botColor,
                 nextState.diceValue,
                 botDiff
               );
               if (bestTokenId !== null) {
                 setTimeout(() => {
-                  const finalState = executeLudoTokenMove(nextState, bestTokenId, [currentUser.id, botOpponentId]);
+                  const finalState = executeLudoTokenMove(nextState, bestTokenId, playerIds);
                   sounds.playMove();
                   setActiveRoom((prev) => (prev ? { ...prev, gameState: finalState } : null));
-                }, 400);
+                }, 150);
                 return;
               }
             }
@@ -372,7 +374,7 @@ export default function App() {
             }
           }
         }
-      }, 700);
+      }, 180);
     }
 
     return () => {
@@ -450,7 +452,8 @@ export default function App() {
           );
           return;
         } else if (action.type === 'roll_dice') {
-          const { nextState } = executeLudoDiceRoll(gameState);
+          const playerIds = [currentUser.id, botOpponentId];
+          const { nextState } = executeLudoDiceRoll(gameState, undefined, playerIds);
           setActiveRoom((prev) => (prev ? { ...prev, gameState: nextState } : null));
         } else if (action.type === 'move_token') {
           const next = executeLudoTokenMove(gameState, action.tokenId as number, [currentUser.id, botOpponentId]);

@@ -406,7 +406,8 @@ wss.on('connection', (ws) => {
               broadcastToRoom(room.config.key, { type: 'room_state', room });
               return;
             } else if (action.type === 'roll_dice') {
-              const { nextState } = executeLudoDiceRoll(room.gameState);
+              const playerIds = room.players.map((p) => p.id);
+              const { nextState } = executeLudoDiceRoll(room.gameState, undefined, playerIds);
               room.gameState = nextState;
               room.updatedAt = Date.now();
               broadcastToRoom(room.config.key, { type: 'room_state', room });

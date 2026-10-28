@@ -119,7 +119,8 @@ export function getPlayableLudoTokens(
 
 export function executeLudoDiceRoll(
   state: LudoGameState,
-  forcedRoll?: number
+  forcedRoll?: number,
+  playerIds?: string[]
 ): { nextState: LudoGameState; mustChooseToken: boolean } {
   if (!state.canRollDice) return { nextState: state, mustChooseToken: false };
 
@@ -134,7 +135,18 @@ export function executeLudoDiceRoll(
 
   // Ludo King 3 consecutive sixes penalty rule: turn is lost!
   if (newSixes === 3) {
-    const nextIndex = (state.activeColorIndex + 1) % state.playerColors.length;
+    let nextIndex = (state.activeColorIndex + 1) % state.playerColors.length;
+    let loops = 0;
+    while (state.finishedRank.includes(state.playerColors[nextIndex]) && loops < state.playerColors.length) {
+      nextIndex = (nextIndex + 1) % state.playerColors.length;
+      loops++;
+    }
+
+    const nextPlayerId =
+      playerIds && playerIds.length > 0
+        ? playerIds[nextIndex] || playerIds[0]
+        : state.currentTurnPlayerId;
+
     return {
       nextState: {
         ...state,
@@ -143,6 +155,7 @@ export function executeLudoDiceRoll(
         canRollDice: true,
         consecutiveSixCount: 0,
         activeColorIndex: nextIndex,
+        currentTurnPlayerId: nextPlayerId,
         lastDiceRolls: [roll, ...state.lastDiceRolls.slice(0, 4)],
         moveHistory: [
           ...state.moveHistory,
@@ -172,8 +185,17 @@ export function executeLudoDiceRoll(
 
   // If no playable tokens exist, advance turn immediately
   if (playableTokens.length === 0) {
-    // If rolled a 6 with no possible move, turn passes
-    const nextIndex = (state.activeColorIndex + 1) % state.playerColors.length;
+    let nextIndex = (state.activeColorIndex + 1) % state.playerColors.length;
+    let loops = 0;
+    while (state.finishedRank.includes(state.playerColors[nextIndex]) && loops < state.playerColors.length) {
+      nextIndex = (nextIndex + 1) % state.playerColors.length;
+      loops++;
+    }
+
+    const nextPlayerId =
+      playerIds && playerIds.length > 0
+        ? playerIds[nextIndex] || playerIds[0]
+        : state.currentTurnPlayerId;
 
     return {
       nextState: {
@@ -182,9 +204,10 @@ export function executeLudoDiceRoll(
         hasRolledDice: false,
         consecutiveSixCount: 0,
         activeColorIndex: nextIndex,
+        currentTurnPlayerId: nextPlayerId,
         moveHistory: [
           ...state.moveHistory,
-          `${activeColor.toUpperCase()} a fait ${roll} (aucun pion déplaçable)`,
+          `${activeColor.toUpperCase()} a fait ${roll} (aucun coup possible) - Tour passé`,
         ],
       },
       mustChooseToken: false,

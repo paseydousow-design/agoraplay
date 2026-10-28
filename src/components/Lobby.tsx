@@ -270,24 +270,22 @@ export const Lobby: React.FC<LobbyProps> = ({
               <label className="block text-xs font-semibold text-slate-300 mb-2">
                 Sélectionnez le jeu pour ce salon :
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
-                {AVAILABLE_GAMES.map((game, idx) => {
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-2.5">
+                {AVAILABLE_GAMES.map((game) => {
                   const isSelected = selectedGame === game.type;
                   return (
                     <button
                       key={game.type}
                       type="button"
                       onClick={() => setSelectedGame(game.type)}
-                      className={`p-3 rounded-2xl border text-left flex flex-col justify-between transition-all ${
-                        idx === 4 ? 'col-span-2 sm:col-span-1' : ''
-                      } ${
+                      className={`p-2.5 sm:p-3 rounded-2xl border text-left flex flex-col justify-between transition-all ${
                         isSelected
                           ? 'bg-amber-400/10 border-amber-400 ring-2 ring-amber-400/30'
                           : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <div className="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                        <div className="p-1.5 sm:p-2 rounded-xl bg-slate-900 border border-slate-800">
                           {game.icon}
                         </div>
                         {isSelected && (
@@ -295,7 +293,7 @@ export const Lobby: React.FC<LobbyProps> = ({
                         )}
                       </div>
                       <div>
-                        <h4 className="text-xs sm:text-sm font-bold text-white font-['Outfit']">
+                        <h4 className="text-xs sm:text-sm font-bold text-white font-['Outfit'] truncate">
                           {game.title}
                         </h4>
                         <span className="text-[10px] text-slate-400 block mt-0.5">

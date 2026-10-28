@@ -46,7 +46,7 @@ export const TicTacToeBoard: React.FC<TicTacToeBoardProps> = ({
       </div>
 
       {/* Main 3x3 Grid */}
-      <div className="relative p-3 bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 w-full aspect-square max-w-[340px]">
+      <div className="relative p-2.5 sm:p-3 bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 w-full aspect-square max-w-[min(100vw-2rem,340px)]">
         <div className="grid grid-cols-3 grid-rows-3 gap-2.5 w-full h-full">
           {board.map((cell, idx) => {
             const isWinningCell = winningLine?.includes(idx);

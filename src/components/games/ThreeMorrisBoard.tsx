@@ -205,7 +205,7 @@ export const ThreeMorrisBoard: React.FC<ThreeMorrisBoardProps> = ({
       </div>
 
       {/* Main Board Arena with SVG Connection Lines */}
-      <div className="relative p-4 bg-gradient-to-b from-slate-900 to-slate-950 rounded-3xl shadow-2xl border-2 border-slate-800 w-full aspect-square max-w-[360px] sm:max-w-[390px] flex items-center justify-center">
+      <div className="relative p-3 sm:p-4 bg-gradient-to-b from-slate-900 to-slate-950 rounded-3xl shadow-2xl border-2 border-slate-800 w-full aspect-square max-w-[min(100vw-2rem,390px)] flex items-center justify-center">
         {/* SVG Alignment Lines (The 8 Connecting Paths) */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none p-4"

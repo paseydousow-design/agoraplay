@@ -264,38 +264,38 @@ export const RoomView: React.FC<RoomViewProps> = ({
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-slate-950 text-slate-100 flex flex-col">
       {/* Top Game Header Bar */}
-      <div className="bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-3">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-slate-900 border-b border-slate-800 px-3 sm:px-6 py-2 sm:py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
           {/* Room info, Key badge & Game Name */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               onClick={() => setIsShareModalOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-amber-400/10 border border-amber-400/30 rounded-xl text-amber-300 hover:bg-amber-400/20 transition-colors group"
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-amber-400/10 border border-amber-400/30 rounded-xl text-amber-300 hover:bg-amber-400/20 transition-colors group shrink-0"
               title="Cliquer pour partager le code du salon"
             >
-              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span className="font-mono font-bold text-xs sm:text-sm tracking-wider">
                 {config.key}
               </span>
-              <Share2 className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform ml-0.5" />
+              <Share2 className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform hidden xs:block" />
             </button>
 
-            <div className="h-4 w-[1px] bg-slate-800 hidden sm:block" />
+            <div className="h-4 w-[1px] bg-slate-800 hidden sm:block shrink-0" />
 
-            <div className="flex items-center gap-2">
-              <span className="font-['Outfit'] font-bold text-white text-sm sm:text-base">
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className="font-['Outfit'] font-bold text-white text-xs sm:text-base truncate">
                 {gameTitles[config.gameType]}
               </span>
               {isBotMode && (
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded-md flex items-center gap-1">
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-1.5 sm:px-2 py-0.5 rounded-md flex items-center gap-1">
                     <Bot className="w-3 h-3" />
-                    Solo IA
+                    <span className="hidden xs:inline">Solo IA</span>
                   </span>
 
                   {/* Difficulty selector pills during Solo match */}
                   {onChangeBotDifficulty && (
-                    <div className="hidden sm:flex items-center bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-[10px]">
+                    <div className="hidden md:flex items-center bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-[10px]">
                       <button
                         type="button"
                         onClick={() => onChangeBotDifficulty('easy')}
@@ -340,25 +340,34 @@ export const RoomView: React.FC<RoomViewProps> = ({
           </div>
 
           {/* Right Header actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Theme & Palette Button */}
             <button
               onClick={() => setIsThemeModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-700 rounded-xl text-xs font-semibold transition-colors shadow-sm"
+              className="p-1.5 sm:px-3 sm:py-1.5 bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-700 rounded-xl text-xs font-semibold transition-colors shadow-sm flex items-center gap-1"
               title="Personnaliser les textures de planche et les couleurs des pions"
             >
-              <Palette className="w-3.5 h-3.5 text-amber-400" />
-              <span className="hidden sm:inline">Planches &amp; Pions</span>
+              <Palette className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="hidden md:inline">Thèmes</span>
             </button>
 
             {/* Guide & Astuces Button */}
             <button
               onClick={() => setIsGuideOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 hover:text-amber-200 text-xs font-semibold rounded-xl border border-amber-400/30 transition-all shadow-sm"
+              className="p-1.5 sm:px-3 sm:py-1.5 bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 hover:text-amber-200 text-xs font-semibold rounded-xl border border-amber-400/30 transition-all shadow-sm flex items-center gap-1"
               title="Voir les règles et les astuces stratégiques"
             >
-              <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-              <span>Astuces &amp; Démos</span>
+              <BookOpen className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="hidden sm:inline">Astuces</span>
+            </button>
+
+            <button
+              onClick={() => setIsShareModalOpen(true)}
+              className="p-1.5 sm:px-3 sm:py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-xl border border-slate-700 transition-colors flex items-center gap-1"
+              title="Inviter un ami dans ce salon"
+            >
+              <Share2 className="w-3.5 h-3.5 text-slate-300 shrink-0" />
+              <span className="hidden md:inline">Inviter</span>
             </button>
 
             <button
@@ -366,26 +375,19 @@ export const RoomView: React.FC<RoomViewProps> = ({
                 setSoundMuted(!soundMuted);
                 sounds.enabled = soundMuted;
               }}
-              className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              className="p-1.5 sm:p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors shrink-0"
               title={soundMuted ? 'Activer le son' : 'Couper le son'}
             >
-              {soundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-            </button>
-
-            <button
-              onClick={() => setIsShareModalOpen(true)}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 transition-colors"
-            >
-              <Share2 className="w-3.5 h-3.5" />
-              Inviter un Ami
+              {soundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
             </button>
 
             <button
               onClick={onLeaveRoom}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-rose-400 hover:bg-rose-950/40 border border-rose-900/40 rounded-lg transition-colors"
+              className="p-1.5 sm:px-3 sm:py-1.5 text-xs font-medium text-rose-400 hover:bg-rose-950/40 border border-rose-900/40 rounded-xl transition-colors flex items-center gap-1 shrink-0"
+              title="Quitter le salon"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              Quitter
+              <LogOut className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Quitter</span>
             </button>
           </div>
         </div>

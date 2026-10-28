@@ -149,7 +149,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       >
         {/* Luxury Handcrafted Wooden Chessboard Frame */}
         <div
-          className={`relative p-2.5 sm:p-4 rounded-2xl w-full aspect-square max-w-[510px] transition-all duration-300 ${
+          className={`relative p-2 sm:p-4 rounded-2xl w-full aspect-square max-w-[min(100vw-1.5rem,500px)] transition-all duration-300 ${
             is3DMode
               ? 'shadow-[0_25px_50px_-12px_rgba(0,0,0,0.85),0_12px_24px_rgba(30,12,4,0.6)]'
               : 'shadow-2xl'

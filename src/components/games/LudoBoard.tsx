@@ -456,56 +456,59 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
   return (
     <div className="flex flex-col items-center select-none w-full max-w-xl mx-auto">
       {/* Mode Selector Bar */}
-      <div className="w-full bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-2.5 sm:p-3 mb-3 shadow-lg">
+      <div className="w-full bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-2 sm:p-3 mb-2.5 sm:mb-3 shadow-lg">
         <div className="flex flex-wrap items-center justify-between gap-2">
           {/* Ludo King Game Mode Badges */}
-          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] sm:text-xs">
             <button
               type="button"
               onClick={() => onChangeMode && onChangeMode('classic')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold transition-all ${
+              className={`flex items-center gap-1 px-2 py-1 sm:px-2.5 rounded-lg font-semibold transition-all ${
                 ludoMode === 'classic'
                   ? 'bg-amber-400 text-slate-950 font-bold shadow'
                   : 'text-slate-400 hover:text-white'
               }`}
               title="Mode Classique : les 4 pions doivent faire le tour"
             >
-              <Crown className="w-3.5 h-3.5" />
-              <span>Classique (4 Pions)</span>
+              <Crown className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Classique (4 Pions)</span>
+              <span className="sm:hidden">Classique</span>
             </button>
 
             <button
               type="button"
               onClick={() => onChangeMode && onChangeMode('quick')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold transition-all ${
+              className={`flex items-center gap-1 px-2 py-1 sm:px-2.5 rounded-lg font-semibold transition-all ${
                 ludoMode === 'quick'
                   ? 'bg-amber-400 text-slate-950 font-bold shadow'
                   : 'text-slate-400 hover:text-white'
               }`}
               title="Mode Rapide : 1 seul pion au centre pour gagner !"
             >
-              <Zap className="w-3.5 h-3.5 text-amber-500" />
-              <span>Rapide (1 Pion)</span>
+              <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span className="hidden sm:inline">Rapide (1 Pion)</span>
+              <span className="sm:hidden">Rapide</span>
             </button>
 
             <button
               type="button"
               onClick={() => onChangeMode && onChangeMode('master')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold transition-all ${
+              className={`flex items-center gap-1 px-2 py-1 sm:px-2.5 rounded-lg font-semibold transition-all ${
                 ludoMode === 'master'
                   ? 'bg-amber-400 text-slate-950 font-bold shadow'
                   : 'text-slate-400 hover:text-white'
               }`}
               title="Mode Maître : Capture d'un pion adverse requise pour rentrer"
             >
-              <Swords className="w-3.5 h-3.5" />
-              <span>Maître (Chasse)</span>
+              <Swords className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Maître (Chasse)</span>
+              <span className="sm:hidden">Maître</span>
             </button>
           </div>
 
           {/* Bonus Turn / Event notification badge */}
           {bonusRollEarned && isMyTurn && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-400/20 border border-amber-400 text-amber-300 text-xs font-bold animate-pulse">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-400/20 border border-amber-400 text-amber-300 text-[11px] sm:text-xs font-bold animate-pulse">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               <span>Re-lancer Bonus !</span>
             </div>
@@ -514,20 +517,20 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
       </div>
 
       {/* Main Turn Controller & Interactive 3D Dice */}
-      <div className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-900 rounded-2xl border border-slate-800 mb-3 shadow-xl">
+      <div className="w-full flex items-center justify-between gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-900 rounded-2xl border border-slate-800 mb-2.5 sm:mb-3 shadow-xl">
         {/* Active Player Status */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <div
-            className={`w-7 h-7 rounded-full ${COLOR_THEMES[activeColor].primaryBg} ring-2 ring-white shadow-md flex items-center justify-center`}
+            className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full ${COLOR_THEMES[activeColor].primaryBg} ring-2 ring-white shadow-md flex items-center justify-center shrink-0`}
           >
-            <div className="w-2.5 h-2.5 rounded-full bg-white/90" />
+            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white/90" />
           </div>
           <div>
-            <div className="text-xs text-slate-400 font-medium">Tour en cours</div>
-            <div className="text-sm sm:text-base font-bold text-white font-['Outfit'] flex items-center gap-1.5">
+            <div className="text-[10px] sm:text-xs text-slate-400 font-medium">Tour en cours</div>
+            <div className="text-xs sm:text-base font-bold text-white font-['Outfit'] flex items-center gap-1.5">
               <span>Joueur {COLOR_THEMES[activeColor].nameFr}</span>
               {isMyTurn && (
-                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.2 rounded font-mono font-bold">
+                <span className="text-[9px] sm:text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.2 rounded font-mono font-bold">
                   VOUS
                 </span>
               )}
@@ -536,11 +539,11 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
         </div>
 
         {/* Dice Controller with 3D Styled Cube */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={handleRollClick}
             disabled={!isMyTurn || !canRollDice || status === 'FINISHED'}
-            className={`group relative p-1 rounded-2xl transition-all duration-200 outline-none ${
+            className={`group relative p-0.5 sm:p-1 rounded-2xl transition-all duration-200 outline-none ${
               isMyTurn && canRollDice && status !== 'FINISHED'
                 ? 'cursor-pointer hover:scale-105 active:scale-95'
                 : 'cursor-not-allowed opacity-80'
@@ -549,7 +552,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
           >
             {/* 3D Dice Cube */}
             <div
-              className={`w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-white border-2 border-slate-300 shadow-xl flex items-center justify-center transition-transform ${
+              className={`w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 shadow-xl flex items-center justify-center transition-transform ${
                 isRollingAnimation ? 'animate-spin' : ''
               } ${
                 isMyTurn && canRollDice
@@ -560,12 +563,12 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
               {diceValue !== null ? (
                 renderDiceDots(diceValue)
               ) : (
-                <Dices className="w-7 h-7 text-slate-700 group-hover:rotate-12 transition-transform" />
+                <Dices className="w-5 h-5 sm:w-7 sm:h-7 text-slate-700 group-hover:rotate-12 transition-transform" />
               )}
             </div>
           </button>
 
-          <div className="text-left hidden sm:block">
+          <div className="text-left hidden xs:block sm:block">
             <div className="text-xs font-bold text-white">
               {canRollDice
                 ? isMyTurn
@@ -575,7 +578,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
                 ? `Dé : ${diceValue}`
                 : 'Attente...'}
             </div>
-            <div className="text-[11px] text-slate-400">
+            <div className="text-[11px] text-slate-400 hidden sm:block">
               {canRollDice && isMyTurn
                 ? 'Faites un 6 pour sortir un pion'
                 : playableTokens.length > 0
@@ -594,7 +597,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
           - All 4 Yard Bases have permanent circular sockets.
           - Pawns glide with smooth CSS transitions.
          ======================================================== */}
-      <div className="relative p-2 sm:p-3 bg-gradient-to-b from-slate-900 to-slate-950 rounded-3xl shadow-2xl border-2 border-slate-800 w-full aspect-square max-w-[480px] sm:max-w-[500px]">
+      <div className="relative p-1.5 sm:p-3 bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl sm:rounded-3xl shadow-2xl border-2 border-slate-800 w-full aspect-square max-w-[min(100vw-1.5rem,500px)]">
         {/* Rigid Board Container */}
         <div className="relative w-full h-full bg-white rounded-2xl overflow-hidden border-2 border-slate-900 shadow-inner">
           

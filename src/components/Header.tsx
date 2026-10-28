@@ -19,16 +19,16 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4 md:gap-8">
         {/* Zone 1: Wordmark */}
         <button
           onClick={() => onNavigate('lobby')}
-          className="flex items-center gap-2.5 text-left group transition-opacity hover:opacity-90"
+          className="flex items-center gap-2 sm:gap-2.5 text-left group transition-opacity hover:opacity-90 shrink-0"
         >
-          <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-105 transition-transform">
-            <Swords className="w-5 h-5" />
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-105 transition-transform">
+            <Swords className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <span className="font-['Outfit'] font-bold text-xl text-white tracking-tight whitespace-nowrap shrink-0">
+          <span className="font-['Outfit'] font-bold text-lg sm:text-xl text-white tracking-tight whitespace-nowrap">
             AgoraPlay
           </span>
         </button>

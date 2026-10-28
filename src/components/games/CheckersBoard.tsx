@@ -148,7 +148,8 @@ export const CheckersBoard: React.FC<CheckersBoardProps> = ({
                 }`}
                 title="Grand Damier 10x10 avec 20 pions (Format roi au Sénégal)"
               >
-                <span>🇸🇳 10x10 (20 pions)</span>
+                <span className="hidden sm:inline">🇸🇳 10x10 (20 pions)</span>
+                <span className="sm:hidden">🇸🇳 10x10</span>
               </button>
 
               <button
@@ -161,7 +162,8 @@ export const CheckersBoard: React.FC<CheckersBoardProps> = ({
                 }`}
                 title="Damier 8x8 avec 12 pions"
               >
-                <span>8x8 (12 pions)</span>
+                <span className="hidden sm:inline">8x8 (12 pions)</span>
+                <span className="sm:hidden">8x8</span>
               </button>
             </div>
           )}
@@ -214,7 +216,7 @@ export const CheckersBoard: React.FC<CheckersBoardProps> = ({
 
       {/* Main Board Container */}
       <div
-        className={`relative p-2 sm:p-3 rounded-3xl shadow-2xl border ${activeBoardTheme.borderColor} ${activeBoardTheme.frameBg} w-full aspect-square max-w-[500px]`}
+        className={`relative p-1.5 sm:p-3 rounded-2xl sm:rounded-3xl shadow-2xl border ${activeBoardTheme.borderColor} ${activeBoardTheme.frameBg} w-full aspect-square max-w-[min(100vw-1.5rem,500px)]`}
       >
         {/* SVG Trajectory Lines Overlay for visual jump path */}
         {selectedTargets.length > 0 && (

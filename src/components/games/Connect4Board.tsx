@@ -59,7 +59,7 @@ export const Connect4Board: React.FC<Connect4BoardProps> = ({
       </div>
 
       {/* Main Connect 4 Vertical Board */}
-      <div className="relative p-3 sm:p-4 bg-blue-900 rounded-2xl shadow-2xl border-4 border-blue-950 w-full max-w-[460px]">
+      <div className="relative p-2.5 sm:p-4 bg-blue-900 rounded-2xl shadow-2xl border-4 border-blue-950 w-full max-w-[min(100vw-1.5rem,460px)]">
         {/* Column Drop Indicator Strip */}
         <div className="grid grid-cols-7 gap-1.5 sm:gap-2 mb-2 px-1">
           {Array.from({ length: C4_COLS }).map((_, c) => (

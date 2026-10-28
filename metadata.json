@@ -1,0 +1,6 @@
+{
+  "name": "AgoraPlay — Salons de Jeux Multijoueurs",
+  "description": "Plateforme de jeux de société multijoueurs en temps réel avec salons privés sécurisés par clé : Dames, Échecs, Ludo, Puissance 4 et Morpion.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

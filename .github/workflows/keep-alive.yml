@@ -1,0 +1,22 @@
+name: Keep-Alive AgoraPlay Server
+
+on:
+  schedule:
+    # Triggered every 10 minutes to prevent Render free instance hibernation
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping AgoraPlay Game Server (Render)
+        run: |
+          echo "Pinging AgoraPlay Render backend to prevent spin-down..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 https://agoraplay.onrender.com/health || true)
+          echo "AgoraPlay Render status: $STATUS"
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ AgoraPlay backend is active and warm!"
+          else
+            echo "⚠️ Server responded with $STATUS (waking up or starting)"
+          fi

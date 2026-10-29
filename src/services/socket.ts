@@ -21,9 +21,21 @@ class SocketClient {
       return;
     }
 
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.host;
-    const url = `${protocol}//${host}`;
+    let url: string;
+    const envWsUrl = import.meta.env.VITE_WS_URL;
+    if (envWsUrl) {
+      url = envWsUrl;
+    } else if (
+      typeof window !== 'undefined' &&
+      (window.location.hostname.includes('vercel.app') ||
+        (window.location.hostname.includes('agoraplay') && !window.location.hostname.includes('onrender.com')))
+    ) {
+      url = 'wss://agoraplay.onrender.com';
+    } else {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = window.location.host;
+      url = `${protocol}//${host}`;
+    }
 
     try {
       this.ws = new WebSocket(url);

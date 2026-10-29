@@ -49,6 +49,16 @@ const wss = new WebSocketServer({ server });
 
 app.use(express.json());
 
+// Health check endpoint for uptime monitors and keep-alive cron jobs
+app.get('/health', (_req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+    service: 'AgoraPlay Game Server',
+  });
+});
+
 // In-memory store for active private game rooms
 const rooms = new Map<string, GameRoom>();
 

@@ -18,6 +18,7 @@ import {
   Award,
   Zap,
   CircleDot,
+  Loader2,
 } from 'lucide-react';
 
 interface LobbyProps {
@@ -143,25 +144,33 @@ export const Lobby: React.FC<LobbyProps> = ({
   const [usePasscode, setUsePasscode] = useState(false);
 
   const [soloDifficulty, setSoloDifficulty] = useState<BotDifficulty>('medium');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     onCreateRoom({
       key: customKey.trim().toUpperCase(),
       gameType: selectedGame,
       passcode: usePasscode && passcode.trim() ? passcode.trim() : undefined,
       playerName: playerName.trim() || 'Hôte',
     });
+    // Safety reset after 6 seconds in case of slow connection
+    setTimeout(() => setIsSubmitting(false), 6000);
   };
 
   const handleJoinSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!joinKey.trim()) return;
+    if (!joinKey.trim() || isSubmitting) return;
+    setIsSubmitting(true);
     onJoinRoom({
       key: joinKey.trim().toUpperCase(),
       passcode: joinPasscode.trim() || undefined,
       playerName: playerName.trim() || 'Invité',
     });
+    // Safety reset after 6 seconds
+    setTimeout(() => setIsSubmitting(false), 6000);
   };
 
   const handleSoloSubmit = (gameType: GameType) => {
@@ -352,10 +361,22 @@ export const Lobby: React.FC<LobbyProps> = ({
 
             <button
               type="submit"
-              className="w-full py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl shadow-lg transition-all text-sm font-['Outfit'] flex items-center justify-center gap-2"
+              disabled={isSubmitting}
+              className={`w-full py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl shadow-lg transition-all text-sm font-['Outfit'] flex items-center justify-center gap-2 ${
+                isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
             >
-              <Plus className="w-4 h-4" />
-              Créer le Salon Privé &amp; Ouvrir l&apos;Arène
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+                  Connexion au salon en cours...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4" />
+                  Créer le Salon Privé &amp; Ouvrir l&apos;Arène
+                </>
+              )}
             </button>
           </form>
         )}
@@ -416,11 +437,22 @@ export const Lobby: React.FC<LobbyProps> = ({
 
             <button
               type="submit"
-              disabled={!joinKey.trim()}
-              className="w-full py-3.5 bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-slate-950 font-bold rounded-xl shadow-lg transition-all text-sm font-['Outfit'] flex items-center justify-center gap-2"
+              disabled={!joinKey.trim() || isSubmitting}
+              className={`w-full py-3.5 bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-slate-950 font-bold rounded-xl shadow-lg transition-all text-sm font-['Outfit'] flex items-center justify-center gap-2 ${
+                isSubmitting ? 'cursor-not-allowed opacity-75' : ''
+              }`}
             >
-              <ArrowRight className="w-4 h-4" />
-              Rejoindre le Salon Privé
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+                  Connexion au salon...
+                </>
+              ) : (
+                <>
+                  <ArrowRight className="w-4 h-4" />
+                  Rejoindre le Salon Privé
+                </>
+              )}
             </button>
           </form>
         )}

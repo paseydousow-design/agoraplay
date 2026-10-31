@@ -12,8 +12,10 @@ class SocketClient {
   private currentRoomKey: string | null = null;
   private currentPlayerId: string | null = null;
   private currentPasscode: string | undefined = undefined;
+  private currentGameType: string | undefined = undefined;
   private currentName: string = '';
   private reconnectTimeout: number | null = null;
+  private messageQueue: object[] = [];
   public isConnected: boolean = false;
 
   connect() {
@@ -42,14 +44,27 @@ class SocketClient {
 
       this.ws.onopen = () => {
         this.isConnected = true;
-        // If we were already in a room, re-join seamlessly
-        if (this.currentRoomKey && this.currentPlayerId) {
+
+        // Flush all queued messages first
+        if (this.messageQueue.length > 0) {
+          const queue = [...this.messageQueue];
+          this.messageQueue = [];
+          for (const msg of queue) {
+            try {
+              this.ws?.send(JSON.stringify(msg));
+            } catch (err) {
+              console.error('Failed to send queued message:', err);
+            }
+          }
+        } else if (this.currentRoomKey && this.currentPlayerId) {
+          // If no queue but we were in a room, re-join seamlessly with full params
           this.send({
             type: 'join_room',
             roomKey: this.currentRoomKey,
             playerId: this.currentPlayerId,
             playerName: this.currentName,
             passcode: this.currentPasscode,
+            gameType: this.currentGameType,
           });
         }
       };
@@ -91,6 +106,9 @@ class SocketClient {
     this.currentPlayerId = playerId;
     this.currentName = playerName;
     this.currentPasscode = passcode;
+    if (gameType) {
+      this.currentGameType = gameType;
+    }
 
     this.connect();
 
@@ -100,7 +118,7 @@ class SocketClient {
       playerId,
       playerName,
       passcode,
-      gameType,
+      gameType: this.currentGameType,
     });
   }
 
@@ -132,6 +150,7 @@ class SocketClient {
   }
 
   switchGame(roomKey: string, playerId: string, newGameType: string) {
+    this.currentGameType = newGameType;
     this.send({
       type: 'switch_game',
       roomKey: roomKey.trim().toUpperCase(),
@@ -147,18 +166,16 @@ class SocketClient {
       playerId,
     });
     this.currentRoomKey = null;
+    this.currentGameType = undefined;
   }
 
   private send(data: object) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(data));
     } else {
-      // If not yet open, retry shortly
-      setTimeout(() => {
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-          this.ws.send(JSON.stringify(data));
-        }
-      }, 300);
+      // Queue message so it sends immediately upon connection
+      this.messageQueue.push(data);
+      this.connect();
     }
   }
 

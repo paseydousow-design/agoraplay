@@ -88,8 +88,10 @@ export default function App() {
     }
   }, []);
 
-  // Setup WebSocket listeners
+  // Setup WebSocket listeners and pre-connect
   useEffect(() => {
+    socketClient.connect();
+
     const unsubRoom = socketClient.onRoomState((room) => {
       setActiveRoom(room);
       setActiveView('room');

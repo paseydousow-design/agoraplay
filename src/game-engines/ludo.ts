@@ -263,6 +263,8 @@ export function executeLudoTokenMove(
 
   targetToken.position = newPosition;
 
+  let animatingCapture: { color: LudoColor; tokenId: number; fromPosition: number } | null = null;
+
   // Check capture/knockout if on main track
   const sq = getLudoBoardSquare(activeColor, newPosition);
   if (sq.type === 'track' && !SAFE_SQUARES.includes(sq.index)) {
@@ -272,6 +274,11 @@ export function executeLudoTokenMove(
         if (oppToken.position >= 0 && oppToken.position < 51) {
           const oppSq = getLudoBoardSquare(otherColor, oppToken.position);
           if (oppSq.type === 'track' && oppSq.index === sq.index) {
+            animatingCapture = {
+              color: otherColor,
+              tokenId: oppToken.id,
+              fromPosition: oppToken.position,
+            };
             // Knock out back to yard socket!
             oppToken.position = -1;
             knockedColor = otherColor;
@@ -341,6 +348,7 @@ export function executeLudoTokenMove(
     hasCapturedOpponent: updatedCaptured,
     consecutiveSixCount: hasBonusTurn && roll === 6 ? state.consecutiveSixCount : 0,
     bonusRollEarned: hasBonusTurn,
+    animatingCapture,
     moveHistory: [...state.moveHistory, logMsg],
     lastMoveTimestamp: Date.now(),
   };

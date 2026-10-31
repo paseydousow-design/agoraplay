@@ -269,9 +269,12 @@ wss.on('connection', (ws) => {
               };
               room.players.push(newPlayer);
 
-              // If enough players, start/refresh game state if WAITING
-              if (room.players.length >= 2 && room.gameState.status === 'WAITING') {
-                room.gameState = createDefaultGameState(room.config.gameType, room.players);
+              // If enough players, start/refresh game state
+              if (room.players.length >= 2) {
+                // If the game was in WAITING state, or had fewer players (like ThreeMorris needing P2 ID), re-initialize properly
+                if (room.gameState.status === 'WAITING' || (room.config.gameType === 'three_morris' && (room.gameState as any).playerIds?.P2 === 'p2')) {
+                  room.gameState = createDefaultGameState(room.config.gameType, room.players);
+                }
               } else if (room.players.length === 1 && room.gameState.status !== 'PLAYING') {
                 room.gameState.currentTurnPlayerId = room.players[0].id;
               }
@@ -527,6 +530,53 @@ wss.on('connection', (ws) => {
           });
 
           broadcastToRoom(room.config.key, { type: 'room_state', room });
+          break;
+        }
+
+        case 'leave_room': {
+          const { roomKey, playerId } = data;
+          const rKey = (roomKey || '').trim().toUpperCase();
+          const room = rooms.get(rKey);
+          if (room) {
+            const playerIndex = room.players.findIndex((p) => p.id === playerId);
+            if (playerIndex !== -1) {
+              const leavingPlayer = room.players[playerIndex];
+              room.players.splice(playerIndex, 1);
+              room.chat.push({
+                id: `sys-${Date.now()}`,
+                senderId: 'system',
+                senderName: 'AgoraPlay',
+                text: `${leavingPlayer.name} a quitté le salon.`,
+                timestamp: Date.now(),
+                isSystem: true,
+              });
+
+              // Reassign host if needed
+              if (leavingPlayer.isHost && room.players.length > 0) {
+                room.players[0].isHost = true;
+                room.chat.push({
+                  id: `sys-${Date.now() + 1}`,
+                  senderId: 'system',
+                  senderName: 'AgoraPlay',
+                  text: `${room.players[0].name} est désormais l'hôte du salon.`,
+                  timestamp: Date.now(),
+                  isSystem: true,
+                });
+              }
+
+              // Update seats
+              room.players.forEach((p, idx) => {
+                p.seatIndex = idx;
+              });
+
+              if (room.players.length === 0) {
+                rooms.delete(rKey);
+              } else {
+                room.updatedAt = Date.now();
+                broadcastToRoom(rKey, { type: 'room_state', room });
+              }
+            }
+          }
           break;
         }
       }

@@ -119,6 +119,11 @@ export interface LudoGameState extends BaseGameState {
   hasCapturedOpponent?: Record<LudoColor, boolean>;
   consecutiveSixCount?: number;
   bonusRollEarned?: boolean;
+  animatingCapture?: {
+    color: LudoColor;
+    tokenId: number;
+    fromPosition: number;
+  } | null;
 }
 
 // ----------------- CONNECT 4 -----------------

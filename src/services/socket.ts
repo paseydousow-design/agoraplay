@@ -140,6 +140,15 @@ class SocketClient {
     });
   }
 
+  leaveRoom(roomKey: string, playerId: string) {
+    this.send({
+      type: 'leave_room',
+      roomKey: roomKey.trim().toUpperCase(),
+      playerId,
+    });
+    this.currentRoomKey = null;
+  }
+
   private send(data: object) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(data));

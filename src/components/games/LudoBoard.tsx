@@ -227,6 +227,14 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
   const [isRollingAnimation, setIsRollingAnimation] = useState(false);
   const [autoMoveSingle] = useState(true);
 
+  // Rewind / capture walkback animation state
+  const [returningPawn, setReturningPawn] = useState<{
+    color: LudoColor;
+    tokenId: number;
+    currentSteps: number;
+    targetSocket: [number, number];
+  } | null>(null);
+
   const activeColor = state.playerColors[state.activeColorIndex];
   const {
     tokens,
@@ -238,6 +246,41 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
     hasCapturedOpponent,
     bonusRollEarned,
   } = state;
+
+  // Trigger smooth step-by-step retreat animation when a token is knocked out
+  useEffect(() => {
+    if (state.animatingCapture) {
+      const { color, tokenId, fromPosition } = state.animatingCapture;
+      const socketCoord = YARD_SOCKET_COORDS[color]?.[tokenId] || [1.7, 1.7];
+
+      setReturningPawn({
+        color,
+        tokenId,
+        currentSteps: fromPosition,
+        targetSocket: socketCoord,
+      });
+
+      // Play capture sound effect
+      sounds.playCapture();
+
+      // Step-by-step retreat animation timer
+      let current = fromPosition;
+      const interval = setInterval(() => {
+        current = current - 1;
+        if (current >= 0) {
+          setReturningPawn((prev) => (prev ? { ...prev, currentSteps: current } : null));
+        } else {
+          clearInterval(interval);
+          // Pawn has made full return loop back to yard!
+          setTimeout(() => {
+            setReturningPawn(null);
+          }, 250);
+        }
+      }, 50); // fast crisp backwards slide
+
+      return () => clearInterval(interval);
+    }
+  }, [state.animatingCapture?.color, state.animatingCapture?.tokenId, state.lastMoveTimestamp]);
 
   const playableTokens =
     hasRolledDice && diceValue
@@ -399,15 +442,45 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
 
   state.playerColors.forEach((color) => {
     (tokens[color] || []).forEach((token) => {
-      if (token.position === -1) return; // Placé directement dans son socle de maison (Yard Socket)
+      // If this token is currently in the middle of being knocked back, skip static yard socket
+      if (token.position === -1) {
+        if (returningPawn && returningPawn.color === color && returningPawn.tokenId === token.id) {
+          // Will be rendered with dynamic retreating coordinates below
+        } else {
+          return; // Placé directement dans son socle de maison (Yard Socket)
+        }
+      }
+
+      let row = 7;
+      let col = 7;
+
+      if (returningPawn && returningPawn.color === color && returningPawn.tokenId === token.id) {
+        if (returningPawn.currentSteps >= 0) {
+          const sq = getLudoBoardSquare(color, returningPawn.currentSteps);
+          if (sq.type === 'track') {
+            const coords = TRACK_COORDS[sq.index];
+            if (coords) [row, col] = coords;
+          }
+        } else {
+          [row, col] = returningPawn.targetSocket;
+        }
+
+        allTokensToRender.push({
+          color,
+          tokenId: token.id,
+          row,
+          col,
+          isPlayable: false,
+          isInYard: false,
+        });
+        return;
+      }
 
       const isPlayable =
         activeColor === color &&
         playableTokens.some((pt) => pt.id === token.id);
 
       const sq = getLudoBoardSquare(color, token.position);
-      let row = 7;
-      let col = 7;
 
       if (sq.type === 'track') {
         const coords = TRACK_COORDS[sq.index];
@@ -606,7 +679,8 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
               <div className="w-full h-full bg-white rounded-xl p-2 sm:p-3 grid grid-cols-2 grid-rows-2 gap-2 shadow-inner border border-slate-200">
                 {[0, 1, 2, 3].map((socketId) => {
                   const token = (tokens.red || []).find((t) => t.id === socketId);
-                  const isInYard = token && token.position === -1;
+                  const isRetreating = returningPawn && returningPawn.color === 'red' && returningPawn.tokenId === socketId;
+                  const isInYard = token && token.position === -1 && !isRetreating;
                   const isPlayable =
                     isInYard &&
                     activeColor === 'red' &&
@@ -679,7 +753,8 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
               <div className="w-full h-full bg-white rounded-xl p-2 sm:p-3 grid grid-cols-2 grid-rows-2 gap-2 shadow-inner border border-slate-200">
                 {[0, 1, 2, 3].map((socketId) => {
                   const token = (tokens.green || []).find((t) => t.id === socketId);
-                  const isInYard = token && token.position === -1;
+                  const isRetreating = returningPawn && returningPawn.color === 'green' && returningPawn.tokenId === socketId;
+                  const isInYard = token && token.position === -1 && !isRetreating;
                   const isPlayable =
                     isInYard &&
                     activeColor === 'green' &&
@@ -812,7 +887,8 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
               <div className="w-full h-full bg-white rounded-xl p-2 sm:p-3 grid grid-cols-2 grid-rows-2 gap-2 shadow-inner border border-slate-200">
                 {[0, 1, 2, 3].map((socketId) => {
                   const token = (tokens.blue || []).find((t) => t.id === socketId);
-                  const isInYard = token && token.position === -1;
+                  const isRetreating = returningPawn && returningPawn.color === 'blue' && returningPawn.tokenId === socketId;
+                  const isInYard = token && token.position === -1 && !isRetreating;
                   const isPlayable =
                     isInYard &&
                     activeColor === 'blue' &&
@@ -885,7 +961,8 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
               <div className="w-full h-full bg-white rounded-xl p-2 sm:p-3 grid grid-cols-2 grid-rows-2 gap-2 shadow-inner border border-slate-200">
                 {[0, 1, 2, 3].map((socketId) => {
                   const token = (tokens.yellow || []).find((t) => t.id === socketId);
-                  const isInYard = token && token.position === -1;
+                  const isRetreating = returningPawn && returningPawn.color === 'yellow' && returningPawn.tokenId === socketId;
+                  const isInYard = token && token.position === -1 && !isRetreating;
                   const isPlayable =
                     isInYard &&
                     activeColor === 'yellow' &&

@@ -543,6 +543,9 @@ export default function App() {
   };
 
   const handleLeaveRoom = () => {
+    if (activeRoom && !isBotMode) {
+      socketClient.leaveRoom(activeRoom.config.key, currentUser.id);
+    }
     setActiveRoom(null);
     setIsBotMode(false);
     setActiveView('lobby');

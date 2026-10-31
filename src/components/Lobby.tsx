@@ -127,7 +127,13 @@ export const Lobby: React.FC<LobbyProps> = ({
   // Modal / Form states
   const [activeTab, setActiveTab] = useState<'create' | 'join' | 'solo'>('create');
   const [selectedGame, setSelectedGame] = useState<GameType>('chess');
-  const [playerName, setPlayerName] = useState('Joueur ' + Math.floor(100 + Math.random() * 900));
+  const [playerName, setPlayerName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('agoraplay_user_name');
+      if (saved) return saved;
+    }
+    return 'Joueur ' + Math.floor(100 + Math.random() * 900);
+  });
   const [customKey, setCustomKey] = useState(
     defaultRoomKey || `SALON-${Math.floor(1000 + Math.random() * 9000)}`
   );

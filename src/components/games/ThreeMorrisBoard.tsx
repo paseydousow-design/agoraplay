@@ -45,8 +45,9 @@ export const ThreeMorrisBoard: React.FC<ThreeMorrisBoardProps> = ({
   const [warningMsg, setWarningMsg] = useState<string | null>(null);
 
   // Helper to determine which symbol corresponds to the local player
+  // If playerIds.P2 is not yet updated or localPlayer is host (P1)
   const mySymbol: 'P1' | 'P2' =
-    localPlayer?.id === state.playerIds.P2 ? 'P2' : 'P1';
+    localPlayer?.id === state.playerIds.P2 || (localPlayer && !localPlayer.isHost) ? 'P2' : 'P1';
 
   // Allowed destinations if a piece is selected during movement phase
   const validDests =
@@ -71,6 +72,7 @@ export const ThreeMorrisBoard: React.FC<ThreeMorrisBoardProps> = ({
     const cellValue = board[cellIndex];
 
     // Case A: Clicking on own piece to select/reselect it
+    // Must match activePlayerSymbol
     if (cellValue === activePlayerSymbol) {
       if (selectedCell === cellIndex) {
         // Deselect

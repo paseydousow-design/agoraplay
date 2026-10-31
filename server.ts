@@ -79,8 +79,10 @@ function createDefaultGameState(gameType: GameType, players: Player[]): AnyGameS
       return createInitialChessState(p1);
     case 'checkers':
       return createInitialCheckersState(p1);
-    case 'ludo':
-      return createInitialLudoState(playerIds.length ? playerIds : ['p1', 'p2'], LUDO_COLORS.slice(0, Math.max(2, playerIds.length)));
+    case 'ludo': {
+      const ludoColors = playerIds.length === 2 ? ['red', 'yellow'] : LUDO_COLORS.slice(0, Math.max(2, playerIds.length));
+      return createInitialLudoState(playerIds.length ? playerIds : ['p1', 'p2'], ludoColors);
+    }
     case 'connect4':
       return createInitialConnect4State(p1);
     case 'tictactoe':
@@ -251,12 +253,13 @@ wss.on('connection', (ws) => {
             // Add as player if room not full, else spectator
             if (room.players.length < room.config.maxPlayers) {
               const seatIndex = room.players.length;
-              const color =
-                room.config.gameType === 'ludo'
-                  ? LUDO_COLORS[seatIndex]
-                  : seatIndex === 0
-                  ? 'white'
-                  : 'black';
+              let color = 'white';
+              if (room.config.gameType === 'ludo') {
+                // In a 2-player Ludo, separate players diagonally: Red (bottom-left) vs Yellow (top-right)
+                color = seatIndex === 0 ? 'red' : seatIndex === 1 ? 'yellow' : seatIndex === 2 ? 'green' : 'blue';
+              } else {
+                color = seatIndex === 0 ? 'white' : 'black';
+              }
 
               const newPlayer: Player = {
                 id: playerId,

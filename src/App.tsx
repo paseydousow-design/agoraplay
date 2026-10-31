@@ -181,7 +181,7 @@ export default function App() {
     const pBot: Player = {
       id: botOpponentId,
       name: `Bot IA (${difficultyLabel})`,
-      color: gameType === 'ludo' ? 'green' : 'black',
+      color: gameType === 'ludo' ? 'yellow' : 'black',
       seatIndex: 1,
       isReady: true,
       isConnected: true,
@@ -196,7 +196,7 @@ export default function App() {
         initialGameState = createInitialCheckersState(p1.id);
         break;
       case 'ludo':
-        initialGameState = createInitialLudoState([p1.id, pBot.id], ['red', 'green']);
+        initialGameState = createInitialLudoState([p1.id, pBot.id], ['red', 'yellow']);
         break;
       case 'connect4':
         initialGameState = createInitialConnect4State(p1.id);

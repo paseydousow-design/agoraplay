@@ -34,7 +34,7 @@ export function createInitialLudoTokens(colors: LudoColor[]): Record<LudoColor, 
 
 export function createInitialLudoState(
   playerIds: string[],
-  colors: LudoColor[] = ['red', 'green', 'yellow', 'blue'],
+  colors: LudoColor[] = ['red', 'yellow'],
   mode: LudoMode = 'classic'
 ): LudoGameState {
   const chosenColors = colors.slice(0, playerIds.length);

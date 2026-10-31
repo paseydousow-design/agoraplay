@@ -23,6 +23,8 @@ import {
   ArrowLeft,
   ArrowUp,
   ShieldCheck,
+  Compass,
+  Eye,
 } from 'lucide-react';
 import { sounds } from '../../services/sound';
 
@@ -119,51 +121,61 @@ const COLOR_THEMES: Record<
     pinInner: string;
     glow: string;
     lightBg: string;
+    headBg: string;
+    skirtBg: string;
   }
 > = {
   red: {
     nameFr: 'Rouge',
-    hex: '#ea2e3a',
-    primaryBg: 'bg-[#ea2e3a]',
-    border: 'border-[#c71f2a]',
-    pinBg: 'bg-gradient-to-b from-[#f87171] via-[#ea2e3a] to-[#b91c1c]',
+    hex: '#ef4444',
+    primaryBg: 'bg-[#ef4444]',
+    border: 'border-[#b91c1c]',
+    pinBg: 'bg-gradient-to-b from-[#f87171] via-[#dc2626] to-[#991b1b]',
     pinInner: 'bg-[#ef4444]',
-    glow: 'shadow-[0_0_16px_rgba(239,68,68,0.8)]',
-    lightBg: 'bg-red-50',
+    glow: 'shadow-[0_0_20px_rgba(239,68,68,0.9)]',
+    lightBg: 'bg-red-500/15',
+    headBg: 'bg-gradient-to-br from-red-300 via-red-500 to-red-800',
+    skirtBg: 'bg-gradient-to-b from-red-500 via-red-600 to-red-900',
   },
   green: {
     nameFr: 'Vert',
-    hex: '#0fa958',
-    primaryBg: 'bg-[#0fa958]',
-    border: 'border-[#0a8242]',
-    pinBg: 'bg-gradient-to-b from-[#34d399] via-[#0fa958] to-[#047857]',
+    hex: '#10b981',
+    primaryBg: 'bg-[#10b981]',
+    border: 'border-[#047857]',
+    pinBg: 'bg-gradient-to-b from-[#34d399] via-[#059669] to-[#065f46]',
     pinInner: 'bg-[#10b981]',
-    glow: 'shadow-[0_0_16px_rgba(16,185,129,0.8)]',
-    lightBg: 'bg-emerald-50',
+    glow: 'shadow-[0_0_20px_rgba(16,185,129,0.9)]',
+    lightBg: 'bg-emerald-500/15',
+    headBg: 'bg-gradient-to-br from-emerald-300 via-emerald-500 to-emerald-800',
+    skirtBg: 'bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-900',
   },
   yellow: {
     nameFr: 'Jaune',
-    hex: '#f5b800',
-    primaryBg: 'bg-[#f5b800]',
-    border: 'border-[#d49e00]',
-    pinBg: 'bg-gradient-to-b from-[#fde047] via-[#f5b800] to-[#b45309]',
-    pinInner: 'bg-[#facc15]',
-    glow: 'shadow-[0_0_16px_rgba(234,179,8,0.8)]',
-    lightBg: 'bg-amber-50',
+    hex: '#f59e0b',
+    primaryBg: 'bg-[#f59e0b]',
+    border: 'border-[#b45309]',
+    pinBg: 'bg-gradient-to-b from-[#fde047] via-[#d97706] to-[#92400e]',
+    pinInner: 'bg-[#f59e0b]',
+    glow: 'shadow-[0_0_20px_rgba(245,158,11,0.9)]',
+    lightBg: 'bg-amber-500/15',
+    headBg: 'bg-gradient-to-br from-amber-200 via-amber-400 to-amber-700',
+    skirtBg: 'bg-gradient-to-b from-amber-400 via-amber-500 to-amber-800',
   },
   blue: {
     nameFr: 'Bleu',
-    hex: '#0088e8',
-    primaryBg: 'bg-[#0088e8]',
-    border: 'border-[#006ec0]',
-    pinBg: 'bg-gradient-to-b from-[#38bdf8] via-[#0088e8] to-[#0369a1]',
-    pinInner: 'bg-[#0ea5e9]',
-    glow: 'shadow-[0_0_16px_rgba(14,165,233,0.8)]',
-    lightBg: 'bg-sky-50',
+    hex: '#0284c7',
+    primaryBg: 'bg-[#0284c7]',
+    border: 'border-[#0369a1]',
+    pinBg: 'bg-gradient-to-b from-[#38bdf8] via-[#0284c7] to-[#075985]',
+    pinInner: 'bg-[#0284c7]',
+    glow: 'shadow-[0_0_20px_rgba(14,165,233,0.9)]',
+    lightBg: 'bg-sky-500/15',
+    headBg: 'bg-gradient-to-br from-sky-300 via-sky-500 to-sky-800',
+    skirtBg: 'bg-gradient-to-b from-sky-500 via-sky-600 to-sky-900',
   },
 };
 
-// Authentic Ludo King 3D Pawn Component
+// Premium Ludo King Figurine (Authentic 3D Bowling Pin Shape with Crown Glow)
 const LudoKingPawn: React.FC<{
   color: LudoColor;
   isPlayable?: boolean;
@@ -180,45 +192,59 @@ const LudoKingPawn: React.FC<{
         if (isPlayable && onClick) onClick();
       }}
       disabled={!isPlayable}
-      className={`relative w-full h-full flex items-center justify-center p-0.5 outline-none select-none transition-transform duration-200 ${
+      className={`relative w-full h-full flex flex-col items-center justify-center outline-none select-none transition-transform duration-200 ${
         isPlayable
-          ? 'cursor-pointer hover:scale-125 z-40 animate-bounce'
+          ? 'cursor-pointer hover:scale-130 z-40 animate-bounce'
           : 'cursor-default'
       }`}
       title={`Pion ${theme.nameFr}${id !== undefined ? ` #${id + 1}` : ''}${
         isPlayable ? ' (Cliquez pour déplacer)' : ''
       }`}
     >
-      {/* Outer Metallic Bezel & Shadow */}
-      <div
-        className={`w-full h-full rounded-full p-[2px] flex items-center justify-center shadow-lg transition-all ${
-          isPlayable
-            ? 'bg-gradient-to-b from-white via-amber-200 to-amber-500 ring-2 ring-white ' +
-              theme.glow
-            : 'bg-gradient-to-b from-white via-slate-200 to-slate-400'
-        }`}
-      >
-        {/* Vibrant Domed Colored Center */}
-        <div
-          className={`w-full h-full rounded-full ${theme.pinBg} border border-white/70 flex items-center justify-center relative overflow-hidden shadow-inner`}
-        >
-          {/* Top Gloss Reflection */}
-          <div className="absolute top-0.5 left-1/4 w-1/2 h-1/3 bg-white/60 rounded-full blur-[0.4px]" />
-          {/* Subtle Center Cap */}
-          <div className="w-1.5 h-1.5 rounded-full bg-white/40 shadow-xs" />
-        </div>
-      </div>
-
-      {/* Ripple Ring when playable */}
+      {/* Dynamic Golden Aura for Playable State */}
       {isPlayable && (
-        <span className="absolute -inset-1 rounded-full bg-amber-400/40 animate-ping pointer-events-none" />
+        <>
+          <span className="absolute -inset-1.5 rounded-full bg-amber-400/40 animate-ping pointer-events-none" />
+          <span className={`absolute -inset-1 rounded-full ${theme.glow} opacity-90 pointer-events-none`} />
+        </>
       )}
+
+      {/* 3D Pawn Body (Authentic Pin / Figurine) */}
+      <div className="relative flex flex-col items-center justify-center w-full h-full max-w-[92%] max-h-[92%]">
+        {/* Spherical Head with specular highlight */}
+        <div
+          className={`relative w-[48%] aspect-square rounded-full ${theme.headBg} border border-white/80 shadow-md flex items-center justify-center z-10 transition-transform ${
+            isPlayable ? 'ring-2 ring-amber-300 ring-offset-1' : ''
+          }`}
+        >
+          {/* Top-left specular shine */}
+          <div className="absolute top-0.5 left-1 w-1/3 h-1/3 bg-white/90 rounded-full blur-[0.3px]" />
+          <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+        </div>
+
+        {/* Neck collar (Golden ring) */}
+        <div className="w-[32%] h-[8%] -my-0.5 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 rounded-sm shadow-xs z-10 border-x border-amber-300" />
+
+        {/* Bell-shaped Skirt Base */}
+        <div
+          className={`relative w-[75%] h-[48%] rounded-b-full rounded-t-lg ${theme.skirtBg} border border-white/70 shadow-lg flex items-center justify-center overflow-hidden`}
+        >
+          {/* Vertical specular sheen */}
+          <div className="absolute inset-y-0 left-1 w-1/4 bg-gradient-to-r from-white/60 to-transparent blur-[0.4px]" />
+          {/* Bottom metallic rim */}
+          <div className="absolute bottom-0 inset-x-0 h-1.5 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+        </div>
+
+        {/* Cast shadow under pawn */}
+        <div className="absolute -bottom-0.5 w-[70%] h-1 bg-black/40 rounded-full blur-[0.6px] -z-10" />
+      </div>
     </button>
   );
 };
 
 export const LudoBoard: React.FC<LudoBoardProps> = ({
   state,
+  localPlayer,
   isMyTurn,
   onRollDice,
   onMoveToken,
@@ -226,6 +252,9 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
 }) => {
   const [isRollingAnimation, setIsRollingAnimation] = useState(false);
   const [autoMoveSingle] = useState(true);
+
+  // Camera view angle: 0 (Classic Flat 2D), 1 (Perspective 3D), 2 (Player Turn Focus)
+  const [cameraAngle, setCameraAngle] = useState<'flat' | '3d' | 'focus'>('3d');
 
   // Rewind / capture walkback animation state
   const [returningPawn, setReturningPawn] = useState<{
@@ -567,6 +596,49 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
             </button>
           </div>
 
+          {/* Camera View Switcher Buttons */}
+          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] sm:text-xs">
+            <button
+              type="button"
+              onClick={() => setCameraAngle('flat')}
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg font-medium transition-all ${
+                cameraAngle === 'flat'
+                  ? 'bg-amber-400 text-slate-950 font-bold shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Vue 2D Vue du ciel"
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>2D</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCameraAngle('3d')}
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg font-medium transition-all ${
+                cameraAngle === '3d'
+                  ? 'bg-amber-400 text-slate-950 font-bold shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Vue Perspective 3D Ludo King"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>3D</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCameraAngle('focus')}
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg font-medium transition-all ${
+                cameraAngle === 'focus'
+                  ? 'bg-amber-400 text-slate-950 font-bold shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Caméra dynamique orientée vers votre camp"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Caméra Pro</span>
+            </button>
+          </div>
+
           {/* Bonus Turn / Event notification badge */}
           {bonusRollEarned && isMyTurn && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-400/20 border border-amber-400 text-amber-300 text-[11px] sm:text-xs font-bold animate-pulse">
@@ -651,16 +723,33 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
       </div>
 
       {/* ========================================================
-          AUTHENTIC 15x15 STATIC LUDO KING BOARD
+          AUTHENTIC 15x15 STATIC LUDO KING BOARD WITH DYNAMIC 3D CAMERA
+          - 3D perspective rotation: flat, angled perspective, or player focus
           - Fixed 15x15 CSS Grid with explicit repeat(15, minmax(0, 1fr))
-          - Absolutely decoupled Token Layer on top:
-            THE BOARD NEVER SHIFTS, WARPS OR RESIZES WHEN PAWNS MOVE!
-          - All 4 Yard Bases have permanent circular sockets.
-          - Pawns glide with smooth CSS transitions.
+          - Absolutely decoupled Token Layer on top
          ======================================================== */}
-      <div className="relative p-1.5 sm:p-3 bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl sm:rounded-3xl shadow-2xl border-2 border-slate-800 w-full aspect-square max-w-[min(100vw-1.5rem,500px)]">
-        {/* Rigid Board Container */}
-        <div className="relative w-full h-full bg-white rounded-2xl overflow-hidden border-2 border-slate-900 shadow-inner">
+      <div
+        className="w-full flex justify-center items-center py-2 transition-transform duration-500 ease-out"
+        style={{
+          perspective: '1200px',
+        }}
+      >
+        <div
+          className="relative p-2 sm:p-4 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] border-4 border-slate-700 w-full aspect-square max-w-[min(100vw-1.5rem,510px)] transition-all duration-500"
+          style={{
+            transform:
+              cameraAngle === '3d'
+                ? 'rotateX(18deg) rotateZ(0deg) scale(0.96)'
+                : cameraAngle === 'focus'
+                ? localPlayer?.color === 'yellow'
+                  ? 'rotateX(18deg) rotateZ(180deg) scale(0.96)'
+                  : 'rotateX(20deg) scale(0.98)'
+                : 'rotateX(0deg) scale(1)',
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          {/* Rigid Board Container */}
+          <div className="relative w-full h-full bg-slate-50 rounded-2xl overflow-hidden border-2 border-slate-900 shadow-2xl">
           
           {/* STATIC BACKGROUND GRID (Never affected by token movement) */}
           <div
@@ -1110,6 +1199,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
           )}
         </div>
       </div>
+    </div>
 
       {/* Footer Info & Authentic Rules Reminder */}
       <div className="w-full mt-3 p-3 bg-slate-900/80 border border-slate-800 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400 shadow">
